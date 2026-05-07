@@ -30,7 +30,7 @@ cutRope/data/
 
 同一个下载脚本同时把 `cutRope/eval/data/`（eval 时派生的 JSON，预先算好了 `prompt_level` 元数据）也填好。
 
-HuggingFace 源：<https://huggingface.co/datasets/Sayaka123/simverse2026>（双盲匿名版）。
+HuggingFace 源：<https://huggingface.co/datasets/SimVer-ano/simverse2026>（双盲匿名版）。
 
 ## 为什么有两个目录？
 

@@ -6,7 +6,7 @@
 
 一个面向多模态 LLM 的多任务 benchmark，专注**可交互模拟谜题**。包含五个相互独立的任务，每个都有各自的浏览器演示、数据集和测评流水线。
 
-**代码托管在 GitHub，数据托管在 HuggingFace**（5 个 config 共约 360MB）：<https://huggingface.co/datasets/Sayaka123/simverse2026>。克隆完仓库后，运行 `python scripts/download_dataset.py` 把数据拉到本地各任务的对应路径——见下方 [Setup](#setup)。
+**代码托管在 GitHub，数据托管在 HuggingFace**（5 个 config 共约 360MB）：<https://huggingface.co/datasets/SimVer-ano/simverse2026>。克隆完仓库后，运行 `python scripts/download_dataset.py` 把数据拉到本地各任务的对应路径——见下方 [Setup](#setup)。
 
 ## 任务列表
 
@@ -24,7 +24,7 @@
 
 ```bash
 # 1. 克隆
-git clone https://huggingface.co/datasets/Sayaka123/simverse2026   # 数据
+git clone https://huggingface.co/datasets/SimVer-ano/simverse2026   # 数据
 git clone https://github.com/Sayaka1234-dot/simverse2026.git       # 代码
 
 # 2. 把数据下载到本地各任务目录

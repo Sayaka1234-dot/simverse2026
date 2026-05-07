@@ -9,7 +9,7 @@
 > python scripts/download_dataset.py --tasks cube2
 > ```
 >
-> HF source (anonymized for double-blind review): <https://huggingface.co/datasets/Sayaka123/simverse2026>
+> HF source (anonymized for double-blind review): <https://huggingface.co/datasets/SimVer-ano/simverse2026>
 
 This directory stores the regenerated `cube2` tasks for the top-face target gameplay.
 

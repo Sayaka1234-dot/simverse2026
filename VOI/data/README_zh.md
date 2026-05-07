@@ -24,7 +24,7 @@ VOI/data/
 └── images/            # 渲染好的目标图 + 各形状图
 ```
 
-HuggingFace 源：<https://huggingface.co/datasets/Sayaka123/simverse2026>（双盲匿名版）。
+HuggingFace 源：<https://huggingface.co/datasets/SimVer-ano/simverse2026>（双盲匿名版）。
 
 ## Per-record schema
 

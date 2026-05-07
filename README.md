@@ -6,7 +6,7 @@
 
 A multi-task benchmark for evaluating multimodal LLMs on interactive simulation puzzles. Five independent tasks, each with its own browser-based playable demo, dataset, and evaluation pipeline.
 
-**Code lives here on GitHub. Data lives on HuggingFace** (~360MB across 5 configs): <https://huggingface.co/datasets/Sayaka123/simverse2026>. After cloning, run `python scripts/download_dataset.py` to fetch the data into the right local paths — see [Setup](#setup) below.
+**Code lives here on GitHub. Data lives on HuggingFace** (~360MB across 5 configs): <https://huggingface.co/datasets/SimVer-ano/simverse2026>. After cloning, run `python scripts/download_dataset.py` to fetch the data into the right local paths — see [Setup](#setup) below.
 
 ## Tasks
 
@@ -24,7 +24,7 @@ Each task is a **fully independent** subproject: its own data, prompts, validato
 
 ```bash
 # 1. Clone
-git clone https://huggingface.co/datasets/Sayaka123/simverse2026   # data
+git clone https://huggingface.co/datasets/SimVer-ano/simverse2026   # data
 git clone https://github.com/Sayaka1234-dot/simverse2026.git       # code
 
 # 2. Download the data into the local task directories

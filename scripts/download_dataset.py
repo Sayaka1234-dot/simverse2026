@@ -2,7 +2,7 @@
 where the eval pipeline and frontend demos expect them.
 
 The repo's code is on GitHub; the bulky data + media live on HuggingFace
-(see https://huggingface.co/datasets/Sayaka123/simverse2026, anonymized for
+(see https://huggingface.co/datasets/SimVer-ano/simverse2026, anonymized for
 double-blind review). After `git clone`, run this script once to populate
 each task's `data/` directory.
 
@@ -21,7 +21,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-DEFAULT_REPO_ID = "Sayaka123/simverse2026"
+DEFAULT_REPO_ID = "SimVer-ano/simverse2026"
 
 # Per-task mapping from HF download paths -> local destination paths.
 #

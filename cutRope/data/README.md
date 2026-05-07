@@ -30,7 +30,7 @@ cutRope/data/
 
 The same downloader also populates `cutRope/eval/data/` (the eval-time-derived JSONs, with `prompt_level` metadata precomputed).
 
-The HuggingFace source: <https://huggingface.co/datasets/Sayaka123/simverse2026> (anonymized for double-blind review).
+The HuggingFace source: <https://huggingface.co/datasets/SimVer-ano/simverse2026> (anonymized for double-blind review).
 
 ## Why two directories?
 

@@ -9,7 +9,7 @@
 > python scripts/download_dataset.py --tasks cube2
 > ```
 >
-> HF 源（双盲匿名版）：<https://huggingface.co/datasets/Sayaka123/simverse2026>
+> HF 源（双盲匿名版）：<https://huggingface.co/datasets/SimVer-ano/simverse2026>
 
 本目录存放重新生成的 `cube2` 任务（顶面目标 gameplay）。
 

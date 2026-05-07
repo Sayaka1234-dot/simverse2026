@@ -24,7 +24,7 @@ VOI/data/
 └── images/            # rendered target + per-shape images
 ```
 
-The HuggingFace source: <https://huggingface.co/datasets/Sayaka123/simverse2026> (anonymized for double-blind review).
+The HuggingFace source: <https://huggingface.co/datasets/SimVer-ano/simverse2026> (anonymized for double-blind review).
 
 ## Per-record schema
 

@@ -11,7 +11,7 @@
 > python scripts/download_dataset.py --tasks cube1
 > ```
 >
-> HF 源（双盲匿名）：<https://huggingface.co/datasets/Sayaka123/simverse2026>
+> HF 源（双盲匿名）：<https://huggingface.co/datasets/SimVer-ano/simverse2026>
 
 下载后此目录会变成：
 

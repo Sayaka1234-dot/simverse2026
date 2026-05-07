@@ -11,7 +11,7 @@
 > python scripts/download_dataset.py --tasks cube1
 > ```
 >
-> HF source (anonymized for double-blind review): <https://huggingface.co/datasets/Sayaka123/simverse2026>
+> HF source (anonymized for double-blind review): <https://huggingface.co/datasets/SimVer-ano/simverse2026>
 
 After download, this directory will contain:
 

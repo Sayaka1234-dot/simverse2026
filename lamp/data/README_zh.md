@@ -28,7 +28,7 @@ lamp/data/
     └── lamp-609.png
 ```
 
-HuggingFace 源：<https://huggingface.co/datasets/Sayaka123/simverse2026>（双盲匿名版）。
+HuggingFace 源：<https://huggingface.co/datasets/SimVer-ano/simverse2026>（双盲匿名版）。
 
 ## Per-record schema
 
