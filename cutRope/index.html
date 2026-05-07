@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Cut the Rope</title>
+        <meta
+            name="description"
+            content="Play Cut the Rope! A mysterious package has arrived, and the little monster inside has only one request… CANDY!"
+        />
+
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+
+        <meta property="og:title" content="Cut the Rope" />
+        <meta property="og:type" content="game" />
+        <meta property="og:url" content="https://yell0wsuit.github.io/cuttherope-cleanhtml5/" />
+        <meta
+            property="og:image"
+            content="https://yell0wsuit.github.io/cuttherope-cleanhtml5/fb.png"
+        />
+        <meta property="og:site_name" content="Cut the Rope" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <link href="/css/ctr.css" rel="stylesheet" type="text/css" />
+        <link href="/css/menu_logo_web.css" rel="stylesheet" type="text/css" />
+        <link href="/css/skin_selection_web.css" rel="stylesheet" type="text/css" />
+
+        <script src="/src/ctr.ts" type="module"></script>
+
+        <noscript>
+            <link href="/css/nojavascript.css" rel="stylesheet" type="text/css" />
+        </noscript>
+    </head>
+
+    <body class="ctrCursor">
+        <div id="lang">
+            <div id="fb-root"></div>
+
+            <style type="text/css">
+                .hideBeforeLoad,
+                #loaderWindow,
+                #popupWindow {
+                    display: none;
+                }
+            </style>
+            <div id="gameContainer">
+                <div id="gameArea" class="hideBeforeLoad">
+                    <div id="canvasBackground" class="panel"></div>
+                    <canvas id="c"></canvas>
+
+                    <div id="loadingPanel" class="panel"></div>
+
+                    <div id="startBackground" class="panel"></div>
+                    <div id="menuBackground" class="panel"></div>
+                    <div id="levelBackground" class="panel">
+                        <canvas id="levelCanvasLeft"></canvas>
+                        <canvas id="levelCanvasRight"></canvas>
+                        <div id="levelTape" class="levelTape"></div>
+                    </div>
+                    <div id="shadowPanel" class="panel">
+                        <canvas id="shadowCanvas"></canvas>
+                    </div>
+                    <div id="menuPanel" class="panel seethrough">
+                        <div class="panelContent">
+                            <div id="menuLogo"></div>
+                            <div id="menuCandySkin" class="menu-sprite candy_01"></div>
+                            <div id="menuCandyHand"></div>
+                            <div id="menuBtnVbox" class="fBtnVBox">
+                                <div id="playBtn" class="fBtn"><img src="" /></div>
+                                <div id="optionsBtn" class="fBtn"><img src="" /></div>
+                            </div>
+                        </div>
+                        <div id="miniOptionsMenu">
+                            <div id="optionSd" style="display: none"></div>
+                            <div id="optionHd" style="display: none"></div>
+                            <div id="optionSound" class="ctrPointer"></div>
+                            <div id="optionMsg"></div>
+                        </div>
+                    </div>
+
+                    <div id="boxPanel" class="panel seethrough">
+                        <canvas id="boxCanvas"></canvas>
+
+                        <div id="boxScore" class="hideFromMouse floatTop"><img src="" /></div>
+
+                        <div id="boxNavBack">
+                            <div class="boxNavDisabled"></div>
+                        </div>
+                        <div id="boxNavForward">
+                            <div></div>
+                        </div>
+                        <div id="boxBack" class="bBtn floatBottom"></div>
+                    </div>
+                    <div id="levelPanel" class="panel">
+                        <div id="levelScore" class="floatTop">
+                            <img src="" />
+                        </div>
+                        <div id="levelPageIndicator" class="floatTop">
+                            <img src="" />
+                        </div>
+                        <div id="levelBack" class="bBtn floatBottom"></div>
+                        <div id="levelNavBack">
+                            <div class="boxNavDisabled"></div>
+                        </div>
+                        <div id="levelNavForward">
+                            <div></div>
+                        </div>
+                        <div id="levelOptions"></div>
+                        <div id="levelResults">
+                            <div id="resultStatus" class=""><canvas></canvas></div>
+                            <div class="starCase">
+                                <div id="resultStar1" class=""></div>
+                                <div id="resultStar2" class=""></div>
+                                <div id="resultStar3" class=""></div>
+                            </div>
+                            <div id="resultTicker" class="">
+                                <canvas id="resultTickerLabel"></canvas>
+                                <canvas id="resultTickerValue"></canvas>
+                                <canvas id="resultTickerMessage"></canvas>
+                            </div>
+                            <div class="line"></div>
+                            <div id="resultScore" class=""></div>
+                            <div class="btnCase">
+                                <div id="replayBtn" class="sBtn"><img src="" /></div>
+                                <div id="lrMenuBtn" class="sBtn"><img src="" /></div>
+                                <div id="nextBtn" class="sBtn"><img src="" /></div>
+                            </div>
+                            <div id="resultImproved"></div>
+                        </div>
+                    </div>
+
+                    <div id="gameCompletePanel" class="panel">
+                        <div id="congrats"></div>
+                        <div id="finalScore"><img src="" /></div>
+                        <!--<a
+                            href="http://www.cuttherope.net/"
+                            id="finalFunBtn"
+                            class="lBtn"
+                            target="_blank"
+                            rel="noopener"
+                            ><img src="" />
+                            <div id="funOmNom"></div>
+                        </a>-->
+                        <div id="gameCompleteBack" class="bBtn"></div>
+                    </div>
+
+                    <div id="optionsPanel" class="panel">
+                        <div class="fBtnVBox">
+                            <div id="optionsTitle"><img src="" /></div>
+                            <div id="soundBtn" class="mini-button ctrCursor">
+                                <div id="options-speaker"></div>
+                                <div class="options-x"></div>
+                            </div>
+                            <div id="musicBtn" class="mini-button ctrCursor">
+                                <div id="options-note"></div>
+                                <div class="options-x"></div>
+                            </div>
+                            <div id="langBtn" class="fBtn">
+                                <img src="" />
+                                <div id="flag"></div>
+                            </div>
+                            <div id="resetBtn" class="fBtn"><img src="" /></div>
+                            <div id="creditsBtn" class="fBtn"><img src="" /></div>
+                            <div id="dragBtn">
+                                <canvas id="dragText"></canvas>
+                                <div class="options-check-disabled"></div>
+                            </div>
+                            <div id="cutBtn" class="ctrCursor">
+                                <canvas id="cutText"></canvas>
+                                <div class="options-check"></div>
+                            </div>
+                        </div>
+                        <div id="optionsBack" class="bBtn"></div>
+                    </div>
+
+                    <div id="skinPanel" class="panel">
+                        <div id="skinTabs"></div>
+                        <div id="skinNavBack">
+                            <div></div>
+                        </div>
+                        <div id="skinNavForward">
+                            <div></div>
+                        </div>
+                        <div id="skinGrid"></div>
+                        <div id="skinBack" class="bBtn"></div>
+                    </div>
+
+                    <div id="d" class="panel ctrPointer">
+                        <img id="dmsg" />
+                        <div id="dframe">
+                            <div id="dpic"></div>
+                        </div>
+                        <div id="dshareBtn" class="fBtn">
+                            <img src="" />
+                            <div id="dfb"></div>
+                        </div>
+                    </div>
+                    <div id="gameBtnTray" class="floatTop">
+                        <div id="gameMsg" class="allSound"></div>
+                        <div id="gameSound" class="ctrPointer allSound"></div>
+                        <div id="gameRestartBtn" class="ctrPointer"></div>
+                        <div id="gameMenuBtn" class="ctrPointer"></div>
+                    </div>
+                    <div id="levelMenu">
+                        <div class="fBtnVBox">
+                            <div id="continueBtn" class="fBtn"><img src="" /></div>
+                            <div id="skipBtn" class="fBtn"><img src="" /></div>
+                            <div id="selectBtn" class="fBtn"><img src="" /></div>
+                            <div id="menuBtn" class="fBtn"><img src="" /></div>
+                        </div>
+                    </div>
+
+                    <div id="boxCutter"></div>
+                    <div id="tapeRoll"></div>
+                    <div id="video"></div>
+                    <div id="fadeToBlack" class="panel"></div>
+                    <div id="processingOverlay" class="panel">
+                        <div id="processingIcon"></div>
+                    </div>
+                </div>
+
+                <!-- Text Command Panel -->
+                <div id="textCmdPanel" style="
+                    position: fixed;
+                    top: 50%;
+                    right: 0;
+                    transform: translateY(-50%);
+                    width: 340px;
+                    max-height: 90vh;
+                    background: rgba(20, 20, 30, 0.92);
+                    border: 1px solid rgba(100, 200, 255, 0.3);
+                    border-right: none;
+                    border-radius: 12px 0 0 12px;
+                    box-shadow: -4px 0 20px rgba(0,0,0,0.5), inset 0 0 30px rgba(100,200,255,0.03);
+                    color: #e0e8f0;
+                    font-family: 'Segoe UI', 'Inter', sans-serif;
+                    font-size: 13px;
+                    z-index: 10000;
+                    display: flex;
+                    flex-direction: column;
+                    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    backdrop-filter: blur(10px);
+                ">
+                    <!-- Toggle Tab -->
+                    <div id="textCmdToggle" style="
+                        position: absolute;
+                        left: -36px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        width: 36px;
+                        height: 100px;
+                        background: rgba(20, 20, 30, 0.92);
+                        border: 1px solid rgba(100, 200, 255, 0.3);
+                        border-right: none;
+                        border-radius: 8px 0 0 8px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        writing-mode: vertical-rl;
+                        font-size: 12px;
+                        color: rgba(100, 200, 255, 0.8);
+                        letter-spacing: 2px;
+                        font-weight: 600;
+                        user-select: none;
+                        backdrop-filter: blur(10px);
+                    ">⌨ CMD</div>
+
+                    <!-- Header -->
+                    <div style="
+                        padding: 12px 16px 8px;
+                        border-bottom: 1px solid rgba(100, 200, 255, 0.15);
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    ">
+                        <span style="font-size: 16px;">🎮</span>
+                        <span style="font-weight: 600; font-size: 14px; color: rgba(100, 200, 255, 0.9);">Text Command Controller</span>
+                    </div>
+
+                    <!-- Command Input -->
+                    <div style="padding: 10px 16px; flex: 1; overflow: auto;">
+                        <label style="font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: block;">Command Sequence</label>
+                        <textarea id="textCmdInput" placeholder="# Enter commands here, e.g.:
+cut_rope 0
+cut_rope 1 when candy_y > 300
+pop_bubble when no_rope
+cut_rope 2 when candy_near 220,300,50 times 2
+toggle_gravity when candy_y < 200" style="
+                            width: 100%;
+                            height: 150px;
+                            background: rgba(0, 0, 0, 0.4);
+                            border: 1px solid rgba(100, 200, 255, 0.2);
+                            border-radius: 8px;
+                            color: #c8f0ff;
+                            font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+                            font-size: 12px;
+                            padding: 10px;
+                            resize: vertical;
+                            outline: none;
+                            box-sizing: border-box;
+                            line-height: 1.5;
+                            transition: border-color 0.2s;
+                        "></textarea>
+
+                        <!-- Buttons -->
+                        <div style="display: flex; gap: 8px; margin-top: 10px;">
+                            <button id="textCmdRun" style="
+                                flex: 1;
+                                padding: 8px 0;
+                                background: linear-gradient(135deg, #2ecc71, #27ae60);
+                                border: none;
+                                border-radius: 6px;
+                                color: white;
+                                font-weight: 600;
+                                font-size: 13px;
+                                cursor: pointer;
+                                transition: all 0.2s;
+                                letter-spacing: 0.5px;
+                            ">▶ Run</button>
+                            <button id="textCmdStop" style="
+                                flex: 1;
+                                padding: 8px 0;
+                                background: linear-gradient(135deg, #e74c3c, #c0392b);
+                                border: none;
+                                border-radius: 6px;
+                                color: white;
+                                font-weight: 600;
+                                font-size: 13px;
+                                cursor: pointer;
+                                transition: all 0.2s;
+                                letter-spacing: 0.5px;
+                                opacity: 0.5;
+                            ">■ Stop</button>
+                        </div>
+
+                        <div style="margin-top: 10px;">
+                            <button id="textCmdSubmit" disabled style="
+                                width: 100%;
+                                padding: 9px 0;
+                                background: linear-gradient(135deg, #f39c12, #d35400);
+                                border: none;
+                                border-radius: 6px;
+                                color: white;
+                                font-weight: 700;
+                                font-size: 13px;
+                                cursor: pointer;
+                                transition: all 0.2s;
+                                letter-spacing: 0.5px;
+                                opacity: 0.45;
+                            ">Submit 3-Star Answer</button>
+                            <div id="textCmdSubmitHint" style="
+                                margin-top: 8px;
+                                font-size: 11px;
+                                line-height: 1.5;
+                                color: rgba(255, 220, 160, 0.85);
+                            ">Run commands and get a 3-star clear to unlock submit.</div>
+                        </div>
+
+                        <div style="
+                            margin-top: 12px;
+                            padding-top: 12px;
+                            border-top: 1px solid rgba(100, 200, 255, 0.12);
+                        ">
+                            <label style="font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: block;">Level Editor</label>
+                            <button id="levelEditorToggle" style="
+                                width: 100%;
+                                padding: 9px 0;
+                                background: linear-gradient(135deg, #3498db, #2471a3);
+                                border: none;
+                                border-radius: 6px;
+                                color: white;
+                                font-weight: 700;
+                                font-size: 13px;
+                                cursor: pointer;
+                                transition: all 0.2s;
+                                letter-spacing: 0.5px;
+                            ">Edit Current Level</button>
+                            <div style="display: flex; gap: 8px; margin-top: 8px;">
+                                <button id="levelEditorSave" disabled style="
+                                    flex: 1;
+                                    padding: 8px 0;
+                                    background: linear-gradient(135deg, #2ecc71, #1e8449);
+                                    border: none;
+                                    border-radius: 6px;
+                                    color: white;
+                                    font-weight: 700;
+                                    font-size: 12px;
+                                    cursor: not-allowed;
+                                    opacity: 0.45;
+                                ">Save JSON</button>
+                                <button id="levelEditorCancel" disabled style="
+                                    flex: 1;
+                                    padding: 8px 0;
+                                    background: linear-gradient(135deg, #7f8c8d, #566573);
+                                    border: none;
+                                    border-radius: 6px;
+                                    color: white;
+                                    font-weight: 700;
+                                    font-size: 12px;
+                                    cursor: not-allowed;
+                                    opacity: 0.45;
+                                ">Cancel</button>
+                            </div>
+                            <div style="display: flex; gap: 8px; margin-top: 8px;">
+                                <select id="levelEditorAddKind" disabled style="
+                                    flex: 1;
+                                    min-width: 0;
+                                    padding: 7px 8px;
+                                    background: rgba(12, 16, 24, 0.92);
+                                    border: 1px solid rgba(100, 200, 255, 0.22);
+                                    border-radius: 6px;
+                                    color: white;
+                                    font-weight: 700;
+                                    font-size: 12px;
+                                    opacity: 0.45;
+                                ">
+                                    <option value="star">Star</option>
+                                    <option value="target">Monster</option>
+                                    <option value="candy">Candy</option>
+                                    <option value="candy_left">Left Half Candy</option>
+                                    <option value="candy_right">Right Half Candy</option>
+                                    <option value="rope_soft">Soft Rope</option>
+                                    <option value="rope_hard">Hard/Taut Rope</option>
+                                    <option value="gravity">Gravity Button</option>
+                                    <option value="lantern">Lantern</option>
+                                    <option value="lightbulb">Lightbulb</option>
+                                </select>
+                                <button id="levelEditorAdd" disabled style="
+                                    width: 82px;
+                                    padding: 8px 0;
+                                    background: linear-gradient(135deg, #16a085, #117864);
+                                    border: none;
+                                    border-radius: 6px;
+                                    color: white;
+                                    font-weight: 800;
+                                    font-size: 12px;
+                                    cursor: not-allowed;
+                                    opacity: 0.45;
+                                ">Add Tool</button>
+                            </div>
+                            <button id="levelEditorDelete" disabled style="
+                                width: 100%;
+                                margin-top: 8px;
+                                padding: 8px 0;
+                                background: linear-gradient(135deg, #c0392b, #922b21);
+                                border: none;
+                                border-radius: 6px;
+                                color: white;
+                                font-weight: 800;
+                                font-size: 12px;
+                                cursor: not-allowed;
+                                opacity: 0.45;
+                            ">Delete Selected</button>
+                            <div id="levelEditorRopeControls" style="
+                                display: none;
+                                grid-template-columns: 1fr 78px 64px;
+                                gap: 8px;
+                                margin-top: 8px;
+                            ">
+                                <select id="levelEditorRopeTension" style="
+                                    min-width: 0;
+                                    padding: 7px 8px;
+                                    background: rgba(12, 16, 24, 0.92);
+                                    border: 1px solid rgba(255, 200, 120, 0.25);
+                                    border-radius: 6px;
+                                    color: white;
+                                    font-weight: 700;
+                                    font-size: 12px;
+                                ">
+                                    <option value="soft">Soft Rope</option>
+                                    <option value="hard">Hard/Taut Rope</option>
+                                </select>
+                                <input id="levelEditorRopeLength" type="number" min="10" max="600" step="1" style="
+                                    min-width: 0;
+                                    padding: 7px 8px;
+                                    background: rgba(12, 16, 24, 0.92);
+                                    border: 1px solid rgba(255, 200, 120, 0.25);
+                                    border-radius: 6px;
+                                    color: white;
+                                    font-weight: 700;
+                                    font-size: 12px;
+                                " />
+                                <button id="levelEditorApplyRope" style="
+                                    padding: 8px 0;
+                                    background: linear-gradient(135deg, #f39c12, #b9770e);
+                                    border: none;
+                                    border-radius: 6px;
+                                    color: white;
+                                    font-weight: 800;
+                                    font-size: 12px;
+                                    cursor: pointer;
+                                ">Apply</button>
+                            </div>
+                            <div id="levelEditorHint" style="
+                                margin-top: 8px;
+                                font-size: 11px;
+                                line-height: 1.5;
+                                color: rgba(180, 230, 255, 0.8);
+                            ">Open a level, click Edit, drag visible handles, then save.</div>
+                        </div>
+
+                        <!-- Status Display -->
+                        <div style="margin-top: 12px;">
+                            <label style="font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: block;">Status</label>
+                            <div id="textCmdStatus" style="
+                                background: rgba(0, 0, 0, 0.4);
+                                border: 1px solid rgba(100, 200, 255, 0.15);
+                                border-radius: 8px;
+                                padding: 10px;
+                                font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+                                font-size: 11px;
+                                max-height: 200px;
+                                overflow-y: auto;
+                                line-height: 1.6;
+                            ">
+                                <span style="opacity: 0.5;">Idle — enter commands and click Run</span>
+                            </div>
+                        </div>
+
+                        <!-- Candy Position Monitor -->
+                        <div style="margin-top: 12px;">
+                            <label style="font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: block;">Candy Position (live)</label>
+                            <div id="textCmdCandyPos" style="
+                                background: rgba(0, 0, 0, 0.3);
+                                border: 1px solid rgba(100, 200, 255, 0.1);
+                                border-radius: 6px;
+                                padding: 6px 10px;
+                                font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+                                font-size: 11px;
+                                color: rgba(100, 200, 255, 0.7);
+                            ">x: — , y: — , vy: —</div>
+                        </div>
+
+                        <!-- Help -->
+                        <details style="margin-top: 12px;">
+                            <summary style="font-size: 11px; opacity: 0.6; cursor: pointer; user-select: none; text-transform: uppercase; letter-spacing: 1px;">Help / Syntax</summary>
+                            <div style="
+                                margin-top: 6px;
+                                font-size: 11px;
+                                line-height: 1.6;
+                                opacity: 0.7;
+                                background: rgba(0,0,0,0.2);
+                                border-radius: 6px;
+                                padding: 8px 10px;
+                            ">
+                                <strong>Actions:</strong><br>
+                                <code>cut_rope N</code> — Cut rope #N<br>
+                                <code>pop_bubble</code> — Pop candy bubble<br>
+                                <code>toggle_gravity</code> — Flip gravity<br>
+                                <code>activate_pump N</code> — Use pump #N<br>
+                                <code>fire_gun N</code> — Fire gun #N<br><br>
+                                <strong>Conditions:</strong><br>
+                                <code>when candy_y &gt; N</code><br>
+                                <code>when candy_y &lt; N</code><br>
+                                <code>when candy_x &gt; N</code> / <code>&lt; N</code><br>
+                                <code>when candy_near X,Y,R</code><br>
+                                <code>when candy_near X,Y,R times N</code><br>
+                                <code>when rope_cut N</code><br>
+                                <code>when no_rope</code><br>
+                                <code>when wait_frames N</code><br>
+                                <code>when candy_velocity_y &gt; N</code><br>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+                <script type="module" src="/src/textCmdUI.ts"></script>
+                <script type="module" src="/src/levelEditorUI.ts"></script>
+
+                <canvas id="e"></canvas>
+
+                <div id="popupWindow">
+                    <div class="popupOuterFrame">
+                        <div class="popupInnerFrame" id="resetGame">
+                            <div id="resetText"></div>
+                            <div class="mBtn" id="resetYesBtn"><img src="" /></div>
+                            <div class="mBtn" id="resetNoBtn"><img src="" /></div>
+                            <div id="resetHoldYes"></div>
+                        </div>
+                        <div class="popupInnerFrame" id="missingStars">
+                            <div id="missingLine1"></div>
+                            <div id="missingCount">
+                                <div id="missingStar"></div>
+                            </div>
+                            <div id="missingLine2"></div>
+                            <div id="missingLine3"></div>
+                            <div class="mBtn" id="missingOkBtn"></div>
+                        </div>
+                        <div class="popupInnerFrame" id="holidayUnavailable">
+                            <div id="holidayLine1"></div>
+                            <div id="holidayLine2"></div>
+                            <div class="mBtn" id="holidayOkBtn"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="upgrade">
+                    <div id="upgrade-header"></div>
+                    <a id="upgrade-button" href="http://windows.microsoft.com/ie"></a>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

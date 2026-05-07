@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Cut the Rope - Level Evaluator</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>
+            body {
+                font-family: "Segoe UI", Arial, sans-serif;
+                background: #0f1115;
+                color: #e6e6e6;
+                margin: 0;
+                padding: 20px;
+            }
+            .container {
+                max-width: 960px;
+                margin: 0 auto;
+            }
+            h1 {
+                margin: 0 0 12px 0;
+                font-size: 22px;
+                font-weight: 600;
+            }
+            label {
+                display: block;
+                margin-top: 12px;
+                font-size: 13px;
+                opacity: 0.8;
+            }
+            input,
+            textarea,
+            button {
+                font-family: "Cascadia Code", "Consolas", monospace;
+            }
+            input,
+            textarea {
+                width: 100%;
+                box-sizing: border-box;
+                padding: 10px;
+                margin-top: 6px;
+                border: 1px solid #2b2f3a;
+                background: #161a22;
+                color: #e6e6e6;
+                border-radius: 6px;
+            }
+            textarea {
+                min-height: 140px;
+                resize: vertical;
+            }
+            button {
+                margin-top: 12px;
+                padding: 10px 14px;
+                border: 0;
+                border-radius: 6px;
+                background: #2b6ef3;
+                color: #ffffff;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+            }
+            pre {
+                margin-top: 16px;
+                padding: 12px;
+                background: #161a22;
+                border: 1px solid #2b2f3a;
+                border-radius: 6px;
+                white-space: pre-wrap;
+            }
+            canvas {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Level Evaluation Runner</h1>
+            <label for="evalLevel">Level JSON file (e.g. 00-01.json)</label>
+            <input id="evalLevel" value="00-01.json" />
+
+            <label for="evalCommands">Command sequence</label>
+            <textarea id="evalCommands">cut_rope 0</textarea>
+
+            <button id="evalRun">Run Evaluation</button>
+            <pre id="evalOutput">Idle.</pre>
+        </div>
+
+        <canvas id="c"></canvas>
+        <script type="module" src="/src/eval/eval.ts"></script>
+    </body>
+</html>

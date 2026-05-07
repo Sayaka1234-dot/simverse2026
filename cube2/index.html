@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewCube | Roll To Target Top Face</title>
+    <meta
+        name="description"
+        content="Design a roll sequence so the cube's top face matches the target top-face image exactly."
+    >
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="level-screen" class="screen">
+        <header class="hero">
+            <div class="hero-copy">
+                <p class="eyebrow">NewCube</p>
+                <h1>Roll To Target Top Face</h1>
+                <p class="hero-text">
+                    You are given the visible cross net of the cube's unfolded outer surface and a target top-face image.
+                    Design any valid roll sequence so that, when viewed from above at the end, the cube's top face matches
+                    the target pattern and orientation exactly.
+                </p>
+            </div>
+            <div class="hero-actions">
+                <label class="search-card" for="level-search">
+                    <span>Filter Levels</span>
+                    <input id="level-search" type="search" placeholder="Enter a level code, for example C100">
+                </label>
+                <div id="level-count" class="level-count">Loading levels...</div>
+            </div>
+        </header>
+
+        <section class="level-section">
+            <div id="level-grid" class="level-grid"></div>
+        </section>
+    </div>
+
+    <div id="game-screen" class="screen hidden">
+        <header class="game-header">
+            <button id="back-btn" class="ghost-btn" type="button">Back To Levels</button>
+            <div class="game-heading">
+                <h2 id="game-title">Level</h2>
+                <p id="game-subtitle" class="game-subtitle"></p>
+            </div>
+            <div class="game-header-right">
+                <div id="game-meta" class="game-meta"></div>
+            </div>
+        </header>
+
+        <main class="game-layout">
+            <section class="panel cube-panel">
+                <div class="panel-head">
+                    <h3>3D Cube</h3>
+                    <button id="reset-view-btn" class="icon-btn" type="button" title="Reset preview" aria-label="Reset preview">Reset</button>
+                </div>
+                <div id="cube-container" class="cube-container"></div>
+
+                <div id="debug-panel" class="debug-panel hidden">
+                    <div class="panel-head compact-head">
+                        <h3>Step Debugger</h3>
+                        <div class="debug-tabs">
+                            <button id="debug-player-tab" class="tab-btn active" type="button">My Sequence</button>
+                            <button id="debug-answer-tab" class="tab-btn hidden" type="button">Reference</button>
+                        </div>
+                    </div>
+                    <p id="debug-step-text" class="debug-step-text">Use the arrows to inspect each roll step.</p>
+                    <div class="debug-face-grid">
+                        <div class="mini-face-card">
+                            <div class="mini-face-title">Current Top Face</div>
+                            <canvas id="debug-current-face" width="96" height="96"></canvas>
+                            <div id="debug-current-meta" class="mini-face-meta"></div>
+                        </div>
+                        <div class="mini-face-card">
+                            <div class="mini-face-title">Target Top Face</div>
+                            <canvas id="debug-target-face" width="96" height="96"></canvas>
+                            <div id="debug-target-meta" class="mini-face-meta"></div>
+                        </div>
+                    </div>
+                    <div class="debug-sequence-wrap">
+                        <div class="mini-face-title">Sequence</div>
+                        <div id="debug-sequence" class="sequence-list"></div>
+                    </div>
+                    <div class="debug-actions">
+                        <button id="debug-prev-btn" class="icon-btn" type="button" title="Previous step" aria-label="Previous step">Prev</button>
+                        <button id="debug-next-btn" class="icon-btn" type="button" title="Next step" aria-label="Next step">Next</button>
+                        <button id="debug-close-btn" class="ghost-btn small" type="button">Close Debugger</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel task-panel">
+                <div class="panel-head">
+                    <h3>Task</h3>
+                </div>
+                <div class="task-copy">
+                    <p>
+                        The cross net below is the unfolded outer surface of the folded cube. The number under each face
+                        is the clockwise rotation in degrees from the original upright pattern. Roll the cube so the final
+                        top face, viewed from above, matches the target image exactly.
+                    </p>
+                </div>
+
+                <div class="task-block">
+                    <div class="block-title">Initial Cross Net</div>
+                    <div id="net-grid" class="net-grid"></div>
+                </div>
+
+                <div class="task-block">
+                    <div class="block-title">Target Top Face</div>
+                    <div class="target-wrap">
+                        <div class="target-card">
+                            <canvas id="target-face-canvas" width="144" height="144"></canvas>
+                            <div id="target-face-meta" class="target-face-meta"></div>
+                        </div>
+                        <div class="target-copy">
+                            <p id="target-text" class="target-text"></p>
+                            <div class="hint-list">
+                                <div>The target is judged by the final top face seen from above.</div>
+                                <div>The output format stays the same: N / S / E / W.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel control-panel">
+                <div class="panel-head">
+                    <h3>Controls</h3>
+                </div>
+
+                <div class="move-pad">
+                    <button class="move-btn" data-direction="N" type="button">^ Roll Up</button>
+                    <div class="move-row">
+                        <button class="move-btn" data-direction="W" type="button">&lt; Roll Left</button>
+                        <button class="move-btn" data-direction="E" type="button">&gt; Roll Right</button>
+                    </div>
+                    <button class="move-btn" data-direction="S" type="button">v Roll Down</button>
+                </div>
+
+                <div class="control-actions">
+                    <button id="undo-btn" class="ghost-btn" type="button">Undo</button>
+                    <button id="clear-btn" class="ghost-btn" type="button">Clear</button>
+                </div>
+
+                <div class="task-block">
+                    <div class="block-title">My Sequence</div>
+                    <div id="player-sequence" class="sequence-list empty">No moves yet.</div>
+                </div>
+
+                <div class="task-block">
+                    <div class="block-title">Current Top Face</div>
+                    <div class="current-face-card">
+                        <canvas id="current-face-canvas" width="120" height="120"></canvas>
+                        <div id="current-face-meta" class="target-face-meta">No moves yet.</div>
+                    </div>
+                </div>
+
+                <div class="submit-actions">
+                    <button id="submit-btn" class="primary-btn" type="button">Check Answer</button>
+                    <button id="debug-player-btn" class="ghost-btn" type="button">Debug My Sequence</button>
+                    <button id="debug-answer-btn" class="ghost-btn hidden" type="button">Debug Reference</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="result-modal" class="result-modal hidden">
+        <div class="result-backdrop"></div>
+        <div class="result-card">
+            <h3 id="result-title">Result</h3>
+            <p id="result-text" class="result-text"></p>
+            <div class="result-face-grid">
+                <div class="mini-face-card">
+                    <div class="mini-face-title">Your Final Top Face</div>
+                    <canvas id="result-player-face" width="112" height="112"></canvas>
+                    <div id="result-player-meta" class="mini-face-meta"></div>
+                </div>
+                <div class="mini-face-card">
+                    <div class="mini-face-title">Target Top Face</div>
+                    <canvas id="result-target-face" width="112" height="112"></canvas>
+                    <div id="result-target-face-meta" class="mini-face-meta"></div>
+                </div>
+            </div>
+            <div id="reference-sequence-box" class="reference-sequence-box"></div>
+            <div class="result-actions">
+                <button id="result-close-btn" class="ghost-btn" type="button">Close</button>
+                <button id="result-debug-player-btn" class="ghost-btn" type="button">Debug My Sequence</button>
+                <button id="result-debug-answer-btn" class="ghost-btn hidden" type="button">Debug Reference</button>
+                <button id="next-level-btn" class="primary-btn" type="button">Next Level</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="patterns.js"></script>
+    <script src="cube-engine.js"></script>
+    <script src="cube-renderer.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

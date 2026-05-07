@@ -1,0 +1,69 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Node
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Eval results & caches (regenerable artifacts)
+**/eval/results/
+**/eval-thinking/results/
+**/eval-thinking/results_task2/
+**/eval/.frame_cache/
+**/eval/.tmp/
+
+# HuggingFace upload bundle (regenerable via scripts/package_for_hf.py).
+# Mostly hardlinks of files already tracked elsewhere in this repo —
+# committing it would duplicate ~360MB and force noisy diffs whenever
+# any per-task data changes.
+hf_dataset/
+
+# Per-task data + rendered media — hosted on HuggingFace, not in git.
+# Use `python scripts/download_dataset.py` after cloning to fetch locally.
+# We keep schema docs / README.md inside these dirs but exclude the bulky
+# generated artifacts.
+VOI/data/levels/
+VOI/data/images/
+cube1/data/task_jsons/
+cube1/data/manifests/
+cube1/data/images/
+cube1/levels/index.json
+cube2/data2/task_jsons/
+cube2/data2/manifests/
+cube2/data2/index.json
+cube2/images/
+lamp/data/levels/
+lamp/data/images/
+cutRope/data/task/
+cutRope/data/video/
+cutRope/eval/data/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Claude Code local settings (per-machine)
+.claude/settings.local.json
+**/.claude/settings.local.json
+
+# OS / temp
+*.log
+*.tmp

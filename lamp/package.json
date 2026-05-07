@@ -1,0 +1,29 @@
+{
+  "name": "mechanical-lamp-puzzle",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:python": "python -m unittest discover -s tests_eval -p \"test_*.py\" -v",
+    "generate:levels": "node scripts/generate-levels.mjs",
+    "build:dataset": "node scripts/build-dataset.mjs",
+    "generate:levels2": "node scripts/generate-levels2.mjs",
+    "build:dataset2": "node scripts/build-dataset2.mjs",
+    "build:data": "node scripts/build-data.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "vite": "^8.0.10"
+  },
+  "devDependencies": {
+    "jsdom": "^29.0.2",
+    "vitest": "^4.1.5"
+  }
+}

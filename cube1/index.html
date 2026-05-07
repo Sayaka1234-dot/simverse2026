@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>立方体还原谜题 | Cube Reconstruction Puzzle</title>
+    <meta name="description" content="根据固定滚动序列与从上往下看到的底面图案序列，还原立方体六个面的图案与朝向。">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="level-select">
+        <div class="title-section">
+            <h1>立方体还原谜题</h1>
+            <p class="subtitle">根据路径上从上往下看到的底面图案序列，反推立方体六个面的图案与朝向</p>
+        </div>
+
+        <div class="mode-switch-card">
+            <div class="mode-switch-copy">
+                <div class="mode-switch-label">挑战模式</div>
+                <p id="mode-intro" class="mode-intro">当前仅保留“立方体还原”模式：系统给出滚动方向，以及你从立方体正上方向下看到的路径图案序列；你来填写展开图并验证答案。</p>
+            </div>
+            <div class="mode-switch" data-scope="level-select">
+                <button class="mode-btn active" data-mode="reconstruct">立方体还原</button>
+            </div>
+        </div>
+
+        <div id="level-list" class="level-list"></div>
+    </div>
+
+    <div id="game-area" class="hidden">
+        <div class="top-bar">
+            <button id="back-to-levels" class="icon-btn" title="返回关卡列表">← 关卡</button>
+            <div class="level-info">
+                <h2 id="level-title">关卡 1</h2>
+                <span id="level-desc" class="level-desc-text"></span>
+            </div>
+            <div class="top-bar-right">
+                <div class="mode-switch compact" data-scope="game">
+                    <button class="mode-btn active" data-mode="reconstruct">还原</button>
+                </div>
+                <div id="step-indicator" class="step-indicator">第 0 步</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="panel-card">
+                    <div class="panel-header">3D 立方体</div>
+                    <div id="cube-3d-container" class="cube-3d-container"></div>
+                </div>
+
+                <div id="reconstruction-validator-panel" class="panel-card hidden">
+                    <div class="panel-header">验证器</div>
+                    <div id="validator-step-info" class="validator-step-info">完成答题后，可在这里逐步回放真实滚动验证过程。</div>
+                    <div id="validator-step-face" class="validator-step-face"></div>
+                    <div class="validator-actions">
+                        <button id="validator-prev-btn" class="btn btn-secondary" title="Previous Step" aria-label="Previous Step">&#8592;</button>
+                        <button id="validator-next-btn" class="btn btn-secondary" title="Next Step" aria-label="Next Step">&#8594;</button>
+                        <button id="validator-reset-view-btn" class="btn btn-secondary" title="Reset View" aria-label="Reset View">&#8634;</button>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <div class="panel-header">展开图</div>
+                    <div class="net-container">
+                        <canvas id="net-canvas"></canvas>
+                        <div id="reconstruction-net" class="reconstruction-net hidden"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="center-panel">
+                <div class="panel-card grid-card">
+                    <div id="grid-panel-title" class="panel-header">还原任务</div>
+                    <div class="grid-container">
+                        <canvas id="grid-canvas"></canvas>
+
+                        <div id="reverse-task-panel" class="reverse-task-panel hidden">
+                            <div class="reverse-task-copy">
+                                <div class="reverse-task-title">该模式已移除</div>
+                                <p class="reverse-task-text">当前项目只保留“立方体还原”模式。</p>
+                            </div>
+                            <div class="reverse-sequence-stage">
+                                <div class="reverse-sequence-title">目标序列</div>
+                                <div id="target-sequence" class="target-sequence"></div>
+                            </div>
+                        </div>
+
+                        <div id="reconstruction-task-panel" class="reconstruction-task-panel hidden">
+                            <div class="reconstruction-task-copy">
+                                <div class="reverse-task-title">根据观察结果还原立方体</div>
+                                <p class="reverse-task-text">系统会给出固定滚动序列，以及每一步滚动后你从立方体正上方向下看到的路径图案与朝向。请将能确定的面填写到左侧展开图中。</p>
+                            </div>
+                            <div class="reconstruction-sections">
+                                <div class="reconstruction-section">
+                                    <div class="reverse-sequence-title">滚动序列</div>
+                                    <div id="reconstruction-directions" class="direction-sequence"></div>
+                                </div>
+                                <div class="reconstruction-section">
+                                    <div class="reverse-sequence-title">路径俯视图案</div>
+                                    <div id="reconstruction-observed-sequence" class="target-sequence"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="step-hint" class="step-hint">从右侧选择图案与方向后，点击左侧展开图填写答案。</div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div id="forward-controls" class="hidden">
+                    <div class="panel-card">
+                        <div class="panel-header">已移除</div>
+                        <div id="pattern-palette" class="pattern-palette"></div>
+                    </div>
+
+                    <div class="panel-card">
+                        <div class="panel-header">已移除</div>
+                        <div id="rotation-control" class="rotation-control">
+                            <button class="rot-btn active" data-rotation="0">0°</button>
+                            <button class="rot-btn" data-rotation="90">90°</button>
+                            <button class="rot-btn" data-rotation="180">180°</button>
+                            <button class="rot-btn" data-rotation="270">270°</button>
+                        </div>
+                    </div>
+
+                    <div class="panel-card answer-preview-card">
+                        <div class="panel-header">已移除</div>
+                        <div class="answer-preview-wrapper">
+                            <canvas id="answer-preview" width="80" height="80"></canvas>
+                            <div id="selected-info" class="selected-info">当前项目只保留还原模式</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="reverse-controls" class="hidden">
+                    <div class="panel-card">
+                        <div class="panel-header">已移除</div>
+                        <div id="move-control" class="move-control">
+                            <button class="move-btn move-btn-north" data-direction="N">↑ 上滚</button>
+                            <button class="move-btn move-btn-west" data-direction="W">← 左滚</button>
+                            <button class="move-btn move-btn-east" data-direction="E">→ 右滚</button>
+                            <button class="move-btn move-btn-south" data-direction="S">↓ 下滚</button>
+                        </div>
+                        <div class="move-actions">
+                            <button id="undo-move-btn" class="btn btn-secondary">撤销一步</button>
+                            <button id="reset-moves-btn" class="btn btn-secondary">清空路径</button>
+                        </div>
+                    </div>
+
+                    <div class="panel-card answer-preview-card">
+                        <div class="panel-header">已移除</div>
+                        <div id="move-preview" class="move-preview empty">当前项目只保留还原模式</div>
+                    </div>
+                </div>
+
+                <div id="reconstruction-controls" class="hidden">
+                    <div class="panel-card">
+                        <div class="panel-header">选择要填写的图案</div>
+                        <div id="reconstruction-palette" class="pattern-palette"></div>
+                        <div id="reconstruction-selected-info" class="selected-info">先选一个图案，再选择方向，然后点击左侧对应的面。</div>
+                    </div>
+
+                    <div class="panel-card">
+                        <div class="panel-header">选择图案方向</div>
+                        <div id="reconstruction-rotation-control" class="rotation-control">
+                            <button class="rot-btn reconstruction-rot-btn active" data-rotation="0">0°</button>
+                            <button class="rot-btn reconstruction-rot-btn" data-rotation="90">90°</button>
+                            <button class="rot-btn reconstruction-rot-btn" data-rotation="180">180°</button>
+                            <button class="rot-btn reconstruction-rot-btn" data-rotation="270">270°</button>
+                        </div>
+                    </div>
+
+                    <div class="panel-card answer-preview-card">
+                        <div class="panel-header">还原规则</div>
+                        <div class="reconstruction-tip">题面显示的是你从立方体正上方向下看到的路径图案与方向；你填写的是立方体外表面的图案与方向。提交后会先给出判分，再进入逐步验证。</div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="submit-btn" class="btn btn-primary">确认答案</button>
+                    <button id="reveal-btn" class="btn btn-reveal hidden">查看结果</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="result-panel" class="result-panel hidden">
+            <div class="result-overlay"></div>
+            <div class="result-content">
+                <div id="score-display" class="score-display"></div>
+                <div class="result-actions">
+                    <button id="validator-open-btn" class="btn btn-secondary hidden" title="Open Step Validator" aria-label="Open Step Validator">Debug</button>
+                    <button id="restart-btn" class="btn btn-secondary">重来</button>
+                    <button id="next-level-btn" class="btn btn-primary">下一关</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="patterns.js"></script>
+    <script src="cube-engine.js"></script>
+    <script src="cube-renderer.js"></script>
+    <script src="levels/catalog.generated.js"></script>
+    <script src="levels.js"></script>
+    <script src="game.js"></script>
+</body>
+
+</html>

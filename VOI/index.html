@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text-VOI</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --panel: #fafafa;
+      --border: #111111;
+      --grid: #d9d9d9;
+      --text: #111111;
+      --muted: #6b6b6b;
+      --error: #c62828;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(0, 0, 0, 0.03), transparent 32%),
+        linear-gradient(180deg, #ffffff 0%, #f5f5f5 100%);
+      color: var(--text);
+      font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif;
+    }
+
+    .app {
+      min-height: 100vh;
+      padding: 32px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .shell {
+      width: min(1480px, 100%);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(17, 17, 17, 0.12);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .panel h2 {
+      margin: 0 0 16px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .canvas-frame {
+      width: fit-content;
+      border: 1px solid var(--border);
+      background: #ffffff;
+    }
+
+    canvas {
+      display: block;
+      background: #ffffff;
+    }
+
+    .controls {
+      display: grid;
+      gap: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    select,
+    textarea,
+    button {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text);
+      font: inherit;
+    }
+
+    select,
+    button {
+      min-height: 44px;
+      padding: 0 12px;
+    }
+
+    textarea {
+      min-height: 280px;
+      resize: vertical;
+      padding: 12px;
+      line-height: 1.5;
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      transition: background 120ms ease, color 120ms ease;
+    }
+
+    button:hover {
+      background: #111111;
+      color: #ffffff;
+    }
+
+    .controls {
+      align-self: start;
+      height: fit-content;
+    }
+
+    .controls .log {
+      min-height: 220px;
+    }
+
+    .library-panel {
+      grid-column: 1 / -1;
+    }
+
+    .library-header {
+      margin-bottom: 16px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .library-copy {
+      display: grid;
+      gap: 6px;
+    }
+
+    .library-header h2 {
+      margin: 0;
+    }
+
+    .library-summary {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .library-summary.error {
+      color: var(--error);
+    }
+
+    .library-controls {
+      width: min(260px, 100%);
+    }
+
+    .atlas {
+      min-height: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .atlas-empty {
+      min-height: 170px;
+      padding: 16px;
+      border: 1px dashed rgba(17, 17, 17, 0.28);
+      background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.015), rgba(0, 0, 0, 0)),
+        #ffffff;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .atlas-grid {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(220px, 240px);
+      gap: 12px;
+      align-items: start;
+      padding-bottom: 4px;
+    }
+
+    .atlas-card {
+      padding: 12px;
+      border: 1px solid rgba(17, 17, 17, 0.12);
+      background: #ffffff;
+      display: grid;
+      gap: 10px;
+    }
+
+    .atlas-card-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .atlas-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .atlas-card-meta {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .atlas-preview {
+      display: flex;
+      justify-content: center;
+    }
+
+    .atlas-preview canvas {
+      border: 1px solid rgba(17, 17, 17, 0.14);
+      background: #ffffff;
+    }
+
+    .atlas-vertices {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .log {
+      min-height: 120px;
+      padding: 12px;
+      border: 1px solid rgba(17, 17, 17, 0.16);
+      background: var(--panel);
+      font-size: 14px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .log-line + .log-line {
+      margin-top: 8px;
+    }
+
+    .log-line.error {
+      color: var(--error);
+    }
+
+    .log-line.success {
+      color: #1b5e20;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1180px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .stage {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        width: 100%;
+      }
+
+      .canvas-frame {
+        width: 100%;
+        overflow: auto;
+      }
+
+      .library-controls {
+        width: 100%;
+      }
+
+      .atlas-grid {
+        grid-auto-flow: row;
+        grid-auto-columns: unset;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Run with `python -m http.server` so fetch can load local JSON files correctly. -->
+  <div class="app">
+    <main class="shell">
+      <section class="stage">
+        <section class="panel">
+          <h2>目标图案</h2>
+          <div class="canvas-frame">
+            <canvas id="target-canvas" width="470" height="470" aria-label="目标画布"></canvas>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>工作区</h2>
+          <div class="canvas-frame">
+            <canvas id="workspace-canvas" width="470" height="470" aria-label="工作区画布"></canvas>
+          </div>
+        </section>
+      </section>
+
+      <aside class="panel controls">
+        <div class="field">
+          <label for="command-input">指令输入</label>
+          <textarea
+            id="command-input"
+            placeholder="示例：&#10;S1 0 V1 [2,2]&#10;S2 90 V3 [5,4]"
+            aria-label="指令输入"
+          ></textarea>
+        </div>
+
+        <button id="run-button" type="button">运行</button>
+
+        <div class="field">
+          <label for="log-output">日志</label>
+          <div id="log-output" class="log" aria-live="polite"></div>
+        </div>
+      </aside>
+
+      <section class="panel library-panel">
+        <div class="library-header">
+          <div class="library-copy">
+            <h2>基础图形库</h2>
+            <p id="level-summary" class="library-summary">&#27491;&#22312;&#21152;&#36733;&#20851;&#21345;&#30446;&#24405;...</p>
+          </div>
+          <div class="field library-controls">
+            <label for="level-select">关卡</label>
+            <select id="level-select" disabled>
+              <option value="" selected>正在加载关卡目录...</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="atlas" class="atlas">
+          <div class="atlas-empty">
+            选择关卡后，这里会横向显示基础图形。
+            <br>
+            每个图形都会带一个小网格预览。
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const DEFAULT_GRID_SIZE = 10;
+    const CELL_SIZE = 40;
+    const GRID_PADDING = { top: 24, right: 20, bottom: 46, left: 46 };
+    const AXIS_FONT = "12px 'Microsoft YaHei', 'PingFang SC', sans-serif";
+    const AXIS_COLOR = "#111111";
+    const GRID_COLOR = "#d9d9d9";
+    const AXIS_TICK_COLOR = "rgba(17, 17, 17, 0.3)";
+    const MINI_CANVAS_SIZE = 150;
+    const MINI_PADDING = { top: 18, right: 16, bottom: 28, left: 28 };
+    const SUPPORTED_ANGLES = new Set([0, 90, 180, 270]);
+    const COMMAND_PATTERN =
+      /^\s*\[?([A-Za-z][\w-]*)\]?\s+\[?(0|90|180|270)\]?\s+\[?(V\d+)\]?\s+\[\s*(-?\d+)\s*,\s*(-?\d+)\s*\]\s*$/;
+
+    const workspaceCanvas = document.getElementById("workspace-canvas");
+    const targetCanvas = document.getElementById("target-canvas");
+    const levelSelect = document.getElementById("level-select");
+    const levelSummary = document.getElementById("level-summary");
+    const atlas = document.getElementById("atlas");
+    const commandInput = document.getElementById("command-input");
+    const runButton = document.getElementById("run-button");
+    const logOutput = document.getElementById("log-output");
+    const workspaceCtx = workspaceCanvas.getContext("2d");
+    const targetCtx = targetCanvas.getContext("2d");
+    const workspaceMaskCanvas = document.createElement("canvas");
+    const targetMaskCanvas = document.createElement("canvas");
+    const workspaceMaskCtx = workspaceMaskCanvas.getContext("2d");
+    const targetMaskCtx = targetMaskCanvas.getContext("2d");
+
+    let currentLevelData = null;
+    let currentLevelName = "";
+    let currentGridSize = DEFAULT_GRID_SIZE;
+    let levelManifest = [];
+    const LEVEL_MANIFEST_JSON_PATH = "";
+    // 填写关卡清单 manifest.json 的路径，例如：./data/levels/manifest.json
+    const LEVEL_JSON_DIRECTORY_PATH = "";
+    // 填写单个关卡 JSON 文件所在目录路径，例如：./data/levels/
+
+    const FALLBACK_TIER_DEFINITIONS = [
+      { tierId: 1, label: "入门 1", start: 1, count: 80 },
+      { tierId: 2, label: "入门 2", start: 81, count: 80 },
+      { tierId: 3, label: "基础 1", start: 161, count: 80 },
+      { tierId: 4, label: "基础 2", start: 241, count: 80 },
+      { tierId: 5, label: "进阶 1", start: 321, count: 70 },
+      { tierId: 6, label: "进阶 2", start: 391, count: 60 },
+      { tierId: 7, label: "挑战 1", start: 451, count: 50 },
+      { tierId: 8, label: "挑战 2", start: 501, count: 40 },
+      { tierId: 9, label: "专家 1", start: 541, count: 35 },
+      { tierId: 10, label: "专家 2", start: 576, count: 25 }
+    ];
+
+    function getGridPixelSize(gridSize = currentGridSize) {
+      return gridSize * CELL_SIZE;
+    }
+
+    function getDisplayCanvasWidth(gridSize = currentGridSize) {
+      return GRID_PADDING.left + getGridPixelSize(gridSize) + GRID_PADDING.right;
+    }
+
+    function getDisplayCanvasHeight(gridSize = currentGridSize) {
+      return GRID_PADDING.top + getGridPixelSize(gridSize) + GRID_PADDING.bottom;
+    }
+
+    function resizeCanvases(gridSize = currentGridSize) {
+      const gridPixelSize = getGridPixelSize(gridSize);
+      const displayWidth = getDisplayCanvasWidth(gridSize);
+      const displayHeight = getDisplayCanvasHeight(gridSize);
+
+      workspaceCanvas.width = displayWidth;
+      workspaceCanvas.height = displayHeight;
+      targetCanvas.width = displayWidth;
+      targetCanvas.height = displayHeight;
+      workspaceMaskCanvas.width = gridPixelSize;
+      workspaceMaskCanvas.height = gridPixelSize;
+      targetMaskCanvas.width = gridPixelSize;
+      targetMaskCanvas.height = gridPixelSize;
+    }
+
+    function appendLog(message, tone = "info") {
+      const line = document.createElement("div");
+      line.className = "log-line";
+      if (tone === "error") {
+        line.classList.add("error");
+      } else if (tone === "success") {
+        line.classList.add("success");
+      }
+      line.textContent = message;
+      logOutput.prepend(line);
+    }
+
+    function setLevelSummary(message, tone = "info") {
+      levelSummary.textContent = message;
+      levelSummary.className = "library-summary";
+      if (tone === "error") {
+        levelSummary.classList.add("error");
+      }
+    }
+
+    function formatLevelNumber(index) {
+      return String(index);
+    }
+
+    function formatLevelId(index) {
+      return "level" + formatLevelNumber(index);
+    }
+
+    function formatDisplayLevelLabel(levelEntry) {
+      if (typeof levelEntry.catalogIndex === "number") {
+        return "第 " + formatLevelNumber(levelEntry.catalogIndex) + " 关";
+      }
+
+      const match = String(levelEntry.id || "").match(/(\d+)$/);
+      if (match) {
+        return "第 " + match[1] + " 关";
+      }
+
+      return levelEntry.name || levelEntry.id || "未命名关卡";
+    }
+
+    function formatPercent(value) {
+      if (typeof value !== "number" || Number.isNaN(value)) {
+        return null;
+      }
+      return Math.round(value * 100) + "%";
+    }
+
+    function buildFallbackManifest() {
+      return FALLBACK_TIER_DEFINITIONS.flatMap((tier) => {
+        return Array.from({ length: tier.count }, (_, offset) => {
+          const catalogIndex = tier.start + offset;
+          return {
+            id: formatLevelId(catalogIndex),
+            name: "Level " + formatLevelNumber(catalogIndex),
+            catalogIndex,
+            difficultyTier: tier.tierId,
+            difficultyLabel: tier.label
+          };
+        });
+      });
+    }
+
+    function populateLevelSelect(levels) {
+      levelSelect.innerHTML = "";
+
+      const placeholderOption = document.createElement("option");
+      placeholderOption.value = "";
+      placeholderOption.selected = true;
+      placeholderOption.textContent = "请选择关卡";
+      levelSelect.appendChild(placeholderOption);
+
+      if (!levels.length) {
+        levelSelect.disabled = true;
+        return;
+      }
+
+      levelSelect.disabled = false;
+      const groupedLevels = new Map();
+
+      levels.forEach((levelEntry) => {
+        const tierKey = levelEntry.difficultyTier || "default";
+        if (!groupedLevels.has(tierKey)) {
+          groupedLevels.set(tierKey, {
+            label: levelEntry.difficultyLabel || "全部关卡",
+            levels: []
+          });
+        }
+        groupedLevels.get(tierKey).levels.push(levelEntry);
+      });
+
+      groupedLevels.forEach((group) => {
+        const container = group.label === "全部关卡"
+          ? levelSelect
+          : document.createElement("optgroup");
+
+        if (container.tagName === "OPTGROUP") {
+          container.label = group.label;
+        }
+
+        group.levels.forEach((levelEntry) => {
+          const option = document.createElement("option");
+          option.value = levelEntry.id;
+          option.textContent = formatDisplayLevelLabel(levelEntry);
+          container.appendChild(option);
+        });
+
+        if (container !== levelSelect) {
+          levelSelect.appendChild(container);
+        }
+      });
+    }
+
+    function getManifestEntry(levelName) {
+      return levelManifest.find((levelEntry) => levelEntry.id === levelName) || null;
+    }
+
+    function updateLevelSummaryForSelection(levelName, levelData = null) {
+      const levelEntry = getManifestEntry(levelName);
+      if (!levelEntry && !levelData) {
+        setLevelSummary("关卡目录已接入，请从右侧列表中选择一关开始。");
+        return;
+      }
+
+      const summarySource = levelData || levelEntry || {};
+      const meta = summarySource.meta || {};
+      const parts = [];
+
+      if (levelEntry) {
+        parts.push(formatDisplayLevelLabel(levelEntry));
+        if (levelEntry.difficultyLabel) {
+          parts.push(levelEntry.difficultyLabel);
+        }
+      }
+
+      const gridSize = summarySource.gridSize;
+      if (typeof gridSize === "number") {
+        parts.push(gridSize + "x" + gridSize);
+      }
+
+      const requiredCount = meta.requiredShapeCount ?? levelEntry?.requiredShapeCount;
+      if (typeof requiredCount === "number") {
+        parts.push("必需图形 " + requiredCount);
+      }
+
+      const distractorCount = meta.distractorShapeCount ?? levelEntry?.distractorShapeCount;
+      if (typeof distractorCount === "number") {
+        parts.push("干扰图形 " + distractorCount);
+      }
+
+      const overlapAllowed = meta.overlapAllowed ?? levelEntry?.overlapAllowed;
+      const overlapRatio = meta.overlapRatio ?? levelEntry?.overlapRatio;
+      if (overlapAllowed) {
+        parts.push("XOR 重叠 " + (formatPercent(overlapRatio) || "已启用"));
+      } else {
+        parts.push("无 XOR 重叠");
+      }
+
+      setLevelSummary(parts.join(" · "));
+    }
+
+    function setAtlasPlaceholder(message) {
+      atlas.innerHTML = "";
+      const placeholder = document.createElement("div");
+      placeholder.className = "atlas-empty";
+      placeholder.innerHTML = message;
+      atlas.appendChild(placeholder);
+    }
+
+    function getGridOrigin() {
+      return {
+        x: GRID_PADDING.left,
+        y: GRID_PADDING.top
+      };
+    }
+
+    function clearCanvas(ctx, canvas) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function drawGridLayer(ctx, gridSize = currentGridSize) {
+      const origin = getGridOrigin();
+      const gridPixelSize = getGridPixelSize(gridSize);
+
+      clearCanvas(ctx, ctx.canvas);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+      ctx.strokeStyle = GRID_COLOR;
+      ctx.lineWidth = 1;
+
+      for (let i = 0; i <= gridSize; i += 1) {
+        const offset = i * CELL_SIZE;
+
+        ctx.beginPath();
+        ctx.moveTo(origin.x + offset + 0.5, origin.y);
+        ctx.lineTo(origin.x + offset + 0.5, origin.y + gridPixelSize);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(origin.x, origin.y + offset + 0.5);
+        ctx.lineTo(origin.x + gridPixelSize, origin.y + offset + 0.5);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = AXIS_COLOR;
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(origin.x + 0.5, origin.y + 0.5, gridPixelSize, gridPixelSize);
+
+      ctx.fillStyle = AXIS_COLOR;
+      ctx.font = AXIS_FONT;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+
+      for (let x = 0; x <= gridSize; x += 1) {
+        const xPosition = origin.x + x * CELL_SIZE;
+        ctx.beginPath();
+        ctx.strokeStyle = AXIS_TICK_COLOR;
+        ctx.moveTo(xPosition + 0.5, origin.y + gridPixelSize);
+        ctx.lineTo(xPosition + 0.5, origin.y + gridPixelSize + 6);
+        ctx.stroke();
+        ctx.fillText(String(x), xPosition, origin.y + gridPixelSize + 10);
+      }
+
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+
+      for (let y = 0; y <= gridSize; y += 1) {
+        const yPosition = origin.y + (gridSize - y) * CELL_SIZE;
+        ctx.beginPath();
+        ctx.strokeStyle = AXIS_TICK_COLOR;
+        ctx.moveTo(origin.x - 6, yPosition + 0.5);
+        ctx.lineTo(origin.x, yPosition + 0.5);
+        ctx.stroke();
+        ctx.fillText(String(y), origin.x - 10, yPosition);
+      }
+
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("X", origin.x + gridPixelSize / 2, origin.y + gridPixelSize + 28);
+      ctx.save();
+      ctx.translate(origin.x - 28, origin.y + gridPixelSize / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText("Y", 0, 0);
+      ctx.restore();
+    }
+
+    function drawDisplayCanvas(ctx, maskCanvas, gridSize = currentGridSize) {
+      drawGridLayer(ctx, gridSize);
+      const origin = getGridOrigin();
+      ctx.drawImage(maskCanvas, origin.x, origin.y);
+    }
+
+    function sortVertexEntries(shapeData) {
+      return Object.entries(shapeData).sort(([leftId], [rightId]) => {
+        return Number(leftId.slice(1)) - Number(rightId.slice(1));
+      });
+    }
+
+    function rotatePointClockwise(point, angle) {
+      const [x, y] = point;
+
+      switch (angle) {
+        case 0:
+          return [x, y];
+        case 90:
+          return [y, -x];
+        case 180:
+          return [-x, -y];
+        case 270:
+          return [-y, x];
+        default:
+          throw new Error("\u4e0d\u652f\u6301\u7684\u65cb\u8f6c\u89d2\u5ea6\uff1a" + angle);
+      }
+    }
+
+    function calculateShapeTransform(
+      shapeData,
+      angle,
+      vertexId,
+      targetGridX,
+      targetGridY
+    ) {
+      if (!SUPPORTED_ANGLES.has(angle)) {
+        throw new Error("\u4e0d\u652f\u6301\u7684\u65cb\u8f6c\u89d2\u5ea6\uff1a" + angle);
+      }
+
+      const rotatedVertices = sortVertexEntries(shapeData).map(
+        ([currentVertexId, point]) => ({
+          vertexId: currentVertexId,
+          point: rotatePointClockwise(point, angle)
+        })
+      );
+
+      const anchorVertex = rotatedVertices.find(
+        (vertex) => vertex.vertexId === vertexId
+      );
+
+      if (!anchorVertex) {
+        throw new Error("\u4e0d\u5b58\u5728\u7684\u9876\u70b9\uff1a" + vertexId);
+      }
+
+      const translateX = targetGridX - anchorVertex.point[0];
+      const translateY = targetGridY - anchorVertex.point[1];
+
+      return rotatedVertices.map((vertex) => ({
+        vertexId: vertex.vertexId,
+        position: [
+          vertex.point[0] + translateX,
+          vertex.point[1] + translateY
+        ]
+      }));
+    }
+
+    function parseInstructionLine(line, lineNumber, levelData) {
+      const match = line.match(COMMAND_PATTERN);
+      if (!match) {
+        throw new Error(
+          "\u7b2c " +
+            lineNumber +
+            " \u884c\u8bed\u6cd5\u9519\u8bef\uff0c\u8bf7\u4f7f\u7528\uff1aShapeID Angle VertexID [GridX,GridY]"
+        );
+      }
+
+      const [, shapeId, angle, vertexId, gridX, gridY] = match;
+      const shapeData = levelData.inventory[shapeId];
+
+      if (!shapeData) {
+        throw new Error(
+          "\u7b2c " + lineNumber + " \u884c\u5f15\u7528\u4e86\u4e0d\u5b58\u5728\u7684\u56fe\u5f62\uff1a" + shapeId
+        );
+      }
+
+      if (!Object.prototype.hasOwnProperty.call(shapeData, vertexId)) {
+        throw new Error(
+          "\u7b2c " +
+            lineNumber +
+            " \u884c\u5f15\u7528\u4e86 " +
+            shapeId +
+            " \u4e2d\u4e0d\u5b58\u5728\u7684\u9876\u70b9 " +
+            vertexId
+        );
+      }
+
+      return {
+        lineNumber,
+        shapeId,
+        angle: Number(angle),
+        vertexId,
+        targetGridX: Number(gridX),
+        targetGridY: Number(gridY)
+      };
+    }
+
+    function parseInstructions(rawText, levelData) {
+      return rawText
+        .split(/\r?\n/)
+        .map((line, index) => ({ line, lineNumber: index + 1 }))
+        .filter(({ line }) => line.trim() !== "")
+        .map(({ line, lineNumber }) =>
+          parseInstructionLine(line.trim(), lineNumber, levelData)
+        );
+    }
+
+    function gridPointToPixel(point) {
+      return [point[0] * CELL_SIZE, (currentGridSize - point[1]) * CELL_SIZE];
+    }
+
+    function drawFilledPolygon(ctx, points) {
+      if (!points || points.length === 0) {
+        return;
+      }
+
+      const [firstPoint, ...remainingPoints] = points;
+      ctx.beginPath();
+      ctx.moveTo(firstPoint[0], firstPoint[1]);
+
+      remainingPoints.forEach((point) => {
+        ctx.lineTo(point[0], point[1]);
+      });
+
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function renderXorPolygons(ctx, canvas, polygons) {
+      clearCanvas(ctx, canvas);
+      ctx.save();
+      ctx.globalCompositeOperation = "xor";
+      ctx.fillStyle = "#000";
+
+      polygons.forEach((polygon) => {
+        const pixelPoints = polygon.map(gridPointToPixel);
+        drawFilledPolygon(ctx, pixelPoints);
+      });
+
+      ctx.restore();
+    }
+
+    function renderTargetPattern(levelData) {
+      const targetPolygons = levelData.target.map((item) => item.polygon);
+      renderXorPolygons(targetMaskCtx, targetMaskCanvas, targetPolygons);
+      drawDisplayCanvas(targetCtx, targetMaskCanvas, currentGridSize);
+    }
+
+    function renderWorkspaceShapes(transformedShapes) {
+      const polygons = transformedShapes.map((shape) =>
+        shape.vertices.map((vertex) => vertex.position)
+      );
+      renderXorPolygons(workspaceMaskCtx, workspaceMaskCanvas, polygons);
+      drawDisplayCanvas(workspaceCtx, workspaceMaskCanvas, currentGridSize);
+    }
+
+    function imageDataMatchesByAlpha(leftImageData, rightImageData) {
+      if (
+        leftImageData.width !== rightImageData.width ||
+        leftImageData.height !== rightImageData.height
+      ) {
+        return false;
+      }
+
+      for (let index = 3; index < leftImageData.data.length; index += 4) {
+        const leftOccupied = leftImageData.data[index] > 0;
+        const rightOccupied = rightImageData.data[index] > 0;
+
+        if (leftOccupied !== rightOccupied) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    function checkWinCondition() {
+      const workspaceImageData = workspaceMaskCtx.getImageData(
+        0,
+        0,
+        workspaceMaskCanvas.width,
+        workspaceMaskCanvas.height
+      );
+      const targetImageData = targetMaskCtx.getImageData(
+        0,
+        0,
+        targetMaskCanvas.width,
+        targetMaskCanvas.height
+      );
+
+      return imageDataMatchesByAlpha(workspaceImageData, targetImageData);
+    }
+
+    function drawMiniGrid(ctx, gridExtent, cellSize, padding) {
+      const gridPixelSize = gridExtent * cellSize;
+      const originX = padding.left;
+      const originY = padding.top;
+
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      ctx.strokeStyle = GRID_COLOR;
+      ctx.lineWidth = 1;
+
+      for (let i = 0; i <= gridExtent; i += 1) {
+        const offset = i * cellSize;
+
+        ctx.beginPath();
+        ctx.moveTo(originX + offset + 0.5, originY);
+        ctx.lineTo(originX + offset + 0.5, originY + gridPixelSize);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(originX, originY + offset + 0.5);
+        ctx.lineTo(originX + gridPixelSize, originY + offset + 0.5);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = AXIS_COLOR;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(originX + 0.5, originY + 0.5, gridPixelSize, gridPixelSize);
+    }
+
+    function renderAtlas(levelData) {
+      atlas.innerHTML = "";
+
+      const atlasGrid = document.createElement("div");
+      atlasGrid.className = "atlas-grid";
+
+      Object.entries(levelData.inventory).forEach(([shapeId, shapeData]) => {
+        const card = document.createElement("div");
+        card.className = "atlas-card";
+
+        const header = document.createElement("div");
+        header.className = "atlas-card-header";
+
+        const title = document.createElement("div");
+        title.className = "atlas-card-title";
+        title.textContent = shapeId;
+
+        const vertexCount = document.createElement("div");
+        vertexCount.className = "atlas-card-meta";
+        vertexCount.textContent = "顶点数：" + Object.keys(shapeData).length;
+
+        header.appendChild(title);
+        header.appendChild(vertexCount);
+
+        const previewWrapper = document.createElement("div");
+        previewWrapper.className = "atlas-preview";
+
+        const previewCanvas = document.createElement("canvas");
+        previewCanvas.width = MINI_CANVAS_SIZE;
+        previewCanvas.height = MINI_CANVAS_SIZE;
+        previewWrapper.appendChild(previewCanvas);
+
+        const verticesText = document.createElement("div");
+        verticesText.className = "atlas-vertices";
+        verticesText.textContent = Object.entries(shapeData)
+          .map(([vertexId, point]) => vertexId + ": [" + point[0] + ", " + point[1] + "]")
+          .join("  ");
+
+        card.appendChild(header);
+        card.appendChild(previewWrapper);
+        card.appendChild(verticesText);
+        atlasGrid.appendChild(card);
+
+        const previewCtx = previewCanvas.getContext("2d");
+        const points = sortVertexEntries(shapeData).map(([, point]) => point);
+        const maxCoordinate = points.reduce((maxValue, point) => {
+          return Math.max(maxValue, point[0], point[1]);
+        }, 4);
+        const gridExtent = maxCoordinate + 1;
+        const availableWidth = MINI_CANVAS_SIZE - MINI_PADDING.left - MINI_PADDING.right;
+        const availableHeight = MINI_CANVAS_SIZE - MINI_PADDING.top - MINI_PADDING.bottom;
+        const cellSize = Math.floor(
+          Math.min(availableWidth, availableHeight) / gridExtent
+        );
+        const gridPixelSize = gridExtent * cellSize;
+        const originX = MINI_PADDING.left;
+        const originY = MINI_PADDING.top;
+
+        drawMiniGrid(previewCtx, gridExtent, cellSize, MINI_PADDING);
+        previewCtx.fillStyle = "#000";
+        drawFilledPolygon(
+          previewCtx,
+          points.map((point) => [
+            originX + point[0] * cellSize,
+            originY + (gridExtent - point[1]) * cellSize
+          ])
+        );
+
+        previewCtx.fillStyle = "#ffffff";
+        previewCtx.strokeStyle = "#111111";
+        previewCtx.lineWidth = 1;
+        previewCtx.font = "10px 'Microsoft YaHei', 'PingFang SC', sans-serif";
+
+        sortVertexEntries(shapeData).forEach(([vertexId, point]) => {
+          const pixelX = originX + point[0] * cellSize;
+          const pixelY = originY + (gridExtent - point[1]) * cellSize;
+
+          previewCtx.beginPath();
+          previewCtx.arc(pixelX, pixelY, 3.5, 0, Math.PI * 2);
+          previewCtx.fill();
+          previewCtx.stroke();
+
+          previewCtx.fillStyle = "#111111";
+          previewCtx.textAlign = "left";
+          previewCtx.textBaseline = "bottom";
+          previewCtx.fillText(vertexId, pixelX + 6, pixelY - 4);
+          previewCtx.fillStyle = "#ffffff";
+        });
+
+        previewCtx.fillStyle = AXIS_COLOR;
+        previewCtx.font = "10px 'Microsoft YaHei', 'PingFang SC', sans-serif";
+        previewCtx.textAlign = "center";
+        previewCtx.textBaseline = "top";
+        for (let x = 0; x <= gridExtent; x += 1) {
+          previewCtx.fillText(
+            String(x),
+            originX + x * cellSize,
+            originY + gridPixelSize + 6
+          );
+        }
+
+        previewCtx.textAlign = "right";
+        previewCtx.textBaseline = "middle";
+        for (let y = 0; y <= gridExtent; y += 1) {
+          previewCtx.fillText(String(y), originX - 6, originY + (gridExtent - y) * cellSize);
+        }
+      });
+
+      atlas.appendChild(atlasGrid);
+    }
+
+    function buildLevelUrl(levelName) {
+      const levelDirectoryPath = LEVEL_JSON_DIRECTORY_PATH.trim();
+      const normalizedDirectoryPath = levelDirectoryPath.endsWith("/")
+        ? levelDirectoryPath
+        : levelDirectoryPath + "/";
+      return new URL(normalizedDirectoryPath + levelName + ".json?t=" + Date.now(), window.location.href);
+    }
+
+    async function initializeLevelCatalog() {
+      const manifestPath = LEVEL_MANIFEST_JSON_PATH.trim();
+      if (!manifestPath) {
+        levelSelect.innerHTML =
+          '<option value="" selected>???? manifest.json ??</option>';
+        levelSelect.disabled = true;
+        setLevelSummary(
+          "????????? manifest.json ????????? JSON ???????",
+          "error"
+        );
+        appendLog("???????????? manifest.json ??? JSON ?????", "error");
+        return;
+      }
+
+      if (!LEVEL_JSON_DIRECTORY_PATH.trim()) {
+        levelSelect.innerHTML =
+          '<option value="" selected>?????? JSON ????</option>';
+        levelSelect.disabled = true;
+        setLevelSummary("????????????? JSON ???????", "error");
+        appendLog("????? JSON ??????????? JSON ?????", "error");
+        return;
+      }
+
+      const manifestUrl = new URL(manifestPath + "?t=" + Date.now(), window.location.href);
+
+      try {
+        const response = await fetch(manifestUrl);
+        if (!response.ok) {
+          throw new Error("HTTP " + response.status);
+        }
+
+        const manifest = await response.json();
+        if (!manifest || !Array.isArray(manifest.levels) || manifest.levels.length === 0) {
+          throw new Error("manifest is empty");
+        }
+
+        levelManifest = manifest.levels;
+        populateLevelSelect(levelManifest);
+        setLevelSummary("????????? " + levelManifest.length + " ??");
+        appendLog("????????? " + levelManifest.length + " ??");
+      } catch (error) {
+        levelManifest = [];
+        levelSelect.innerHTML = '<option value="" selected>????????</option>';
+        levelSelect.disabled = true;
+        setLevelSummary("???? manifest.json??????? JSON ?????", "error");
+        appendLog("???????????? manifest.json ???????", "error");
+      }
+    }
+
+    function describeFetchError(error, levelUrl) {
+      if (window.location.protocol === "file:") {
+        return (
+          "\u52a0\u8f7d\u5173\u5361\u5931\u8d25: \u5f53\u524d\u9875\u9762\u662f file:// \u76f4\u63a5\u6253\u5f00\uff0c" +
+          "\u8bf7\u5728 VOI \u76ee\u5f55\u8fd0\u884c python -m http.server\uff0c" +
+          "\u7136\u540e\u8bbf\u95ee http://localhost:8000/index.html"
+        );
+      }
+
+      if (error instanceof TypeError) {
+        return (
+          "\u52a0\u8f7d\u5173\u5361\u5931\u8d25: \u65e0\u6cd5\u8bf7\u6c42 " +
+          levelUrl.href +
+          " \u3002\u8bf7\u68c0\u67e5 python -m http.server \u662f\u5426\u5728 VOI \u76ee\u5f55\u542f\u52a8\uff0c" +
+          "\u5e76\u4f7f\u7528 http://localhost:8000/index.html \u6253\u5f00\u9875\u9762\u3002"
+        );
+      }
+
+      return "\u52a0\u8f7d\u5173\u5361\u5931\u8d25: " + error.message;
+    }
+
+    async function loadLevel(levelName) {
+      const levelUrl = buildLevelUrl(levelName);
+
+      try {
+        const response = await fetch(levelUrl);
+        if (!response.ok) {
+          throw new Error("HTTP " + response.status + " (" + levelUrl.pathname + ")");
+        }
+
+        const levelData = await response.json();
+        currentLevelData = levelData;
+        currentLevelName = levelName;
+        currentGridSize = levelData.gridSize || DEFAULT_GRID_SIZE;
+        resizeCanvases(currentGridSize);
+        updateLevelSummaryForSelection(levelName, levelData);
+        renderAtlas(levelData);
+        renderTargetPattern(levelData);
+        renderXorPolygons(workspaceMaskCtx, workspaceMaskCanvas, []);
+        drawDisplayCanvas(workspaceCtx, workspaceMaskCanvas, currentGridSize);
+        console.log("Loaded level:", levelData, "from", levelUrl.href);
+        appendLog("加载关卡成功：" + (levelData.name || levelName));
+      } catch (error) {
+        currentLevelData = null;
+        currentLevelName = "";
+        currentGridSize = DEFAULT_GRID_SIZE;
+        resizeCanvases(currentGridSize);
+        updateLevelSummaryForSelection("");
+        setAtlasPlaceholder(
+          "\u9009\u62e9\u5173\u5361\u540e\uff0c\u8fd9\u91cc\u4f1a\u663e\u793a\u57fa\u7840\u56fe\u5f62\u3002<br>\u6bcf\u4e2a\u56fe\u5f62\u90fd\u4f1a\u5e26\u4e00\u4e2a\u5c0f\u7f51\u683c\u9884\u89c8\u3002"
+        );
+        clearCanvas(targetCtx, targetCanvas);
+        renderXorPolygons(targetMaskCtx, targetMaskCanvas, []);
+        renderXorPolygons(workspaceMaskCtx, workspaceMaskCanvas, []);
+        drawDisplayCanvas(targetCtx, targetMaskCanvas, currentGridSize);
+        drawDisplayCanvas(workspaceCtx, workspaceMaskCanvas, currentGridSize);
+        appendLog(describeFetchError(error, levelUrl), "error");
+      }
+    }
+
+    levelSelect.addEventListener("change", (event) => {
+      const levelName = event.target.value;
+      if (!levelName) {
+        appendLog("\u8bf7\u9009\u62e9\u4e00\u4e2a\u5173\u5361");
+        return;
+      }
+
+      loadLevel(levelName);
+    });
+
+    runButton.addEventListener("click", () => {
+      if (!currentLevelData) {
+        appendLog("\u8bf7\u5148\u9009\u62e9\u5173\u5361\u518d\u8fd0\u884c\u6307\u4ee4\u3002", "error");
+        return;
+      }
+
+      try {
+        const instructions = parseInstructions(commandInput.value, currentLevelData);
+
+        if (instructions.length === 0) {
+          appendLog("\u6ca1\u6709\u53ef\u6267\u884c\u7684\u6307\u4ee4\u3002");
+          return;
+        }
+
+        const transformedShapes = instructions.map((instruction) => {
+          const shapeData = currentLevelData.inventory[instruction.shapeId];
+          const transformedVertices = calculateShapeTransform(
+            shapeData,
+            instruction.angle,
+            instruction.vertexId,
+            instruction.targetGridX,
+            instruction.targetGridY
+          );
+
+          console.log("Calculated global vertices:", {
+            level: currentLevelName,
+            line: instruction.lineNumber,
+            shapeId: instruction.shapeId,
+            angle: instruction.angle,
+            anchorVertex: instruction.vertexId,
+            target: [instruction.targetGridX, instruction.targetGridY],
+            vertices: transformedVertices
+          });
+          return {
+            lineNumber: instruction.lineNumber,
+            shapeId: instruction.shapeId,
+            vertices: transformedVertices
+          };
+        });
+
+        renderWorkspaceShapes(transformedShapes);
+
+        const hasMatchedTarget = checkWinCondition();
+
+        appendLog(
+          "\u5df2\u6210\u529f\u89e3\u6790 " + instructions.length + " \u6761\u6307\u4ee4\u3002"
+        );
+
+        if (hasMatchedTarget) {
+          appendLog("\u901a\u5173\u6210\u529f\uff01", "success");
+        } else {
+          appendLog(
+            "\u56fe\u6848\u4e0d\u5339\u914d\uff0c\u8bf7\u7ee7\u7eed\u5c1d\u8bd5"
+          );
+        }
+      } catch (error) {
+        appendLog(error.message, "error");
+      }
+    });
+
+    resizeCanvases(currentGridSize);
+    renderXorPolygons(targetMaskCtx, targetMaskCanvas, []);
+    renderXorPolygons(workspaceMaskCtx, workspaceMaskCanvas, []);
+    drawDisplayCanvas(targetCtx, targetMaskCanvas, currentGridSize);
+    drawDisplayCanvas(workspaceCtx, workspaceMaskCanvas, currentGridSize);
+    appendLog("页面已就绪，正在接入关卡目录。");
+    initializeLevelCatalog();
+  </script>
+</body>
+</html>
